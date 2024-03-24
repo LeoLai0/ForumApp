@@ -3,5 +3,78 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: Arial;
+    font-family: Helvetica;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    background-color: hsl(36deg, 6%, 16%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Milestone 1 Styling */
+.qanda-logo {
+    width: 80px;
+    margin-top: 80px;
+    border-radius: 10px;
+}
+
+.login-container {
+    display: flex;
+    width: 320px;
+    height: 700px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-form {
+
+}
+
+label {
+    margin-bottom: 8px;
+    color: white;
+}
+.input-box {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+input, button {
+    height: 45px;
+    border: 0px;
+    border-radius: 5px;
+    width: 320px;
+    padding: 0px;
+}
+
+.submit-box {
+    padding: 18.5px 0px 18.5px;
+}
+button {
+    font-family: Helvetica;
+    color: white;
+    font-weight: bold;
+    background-color: hsl(46.67deg 70.32% 50.75%);
+}
+
+input {
+    background-color: hsl(46.67deg 24.32% 92.75%);
+}
+
+.register-text > p {
+    align-self: center;
+    font-weight: 100;
+    color: white;
+    margin: 0px;
+    text-align: center;
+}
+
+.link {
+    color: red;
 }
