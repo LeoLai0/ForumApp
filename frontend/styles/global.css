@@ -11,34 +11,76 @@ html {
 }
 
 body {
-    background-color: hsl(36deg, 6%, 16%);
+    background-color: hsl(46.67deg 24.32% 92.75%);
+    display: flex;
+    justify-content: center;
+}
+
+main {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
-/* Milestone 1 Styling */
+
+/* header */
 .qanda-logo {
-    width: 80px;
-    margin-top: 80px;
+    width: 100px;
     border-radius: 10px;
 }
 
-.login-container {
+* {
+    margin: 0;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.nav-item {
+    width: 130px;
+    height: 50px;
+    background-color: transparent;
+    color: black;
+    border: 1px solid hsl(46.67deg 20% 50%);
+    border-radius: 5px;
+    margin-left: 20px;
+}
+.nav-item:hover {
+    background-color: hsl(209.84deg 100% 40.18%);
+    transition: 0.2s;
+    border: 0;
+    color: white;
+}
+
+/* Milestone 1 Styling */
+.page-login, .page-register {
+    align-self: center;
     display: flex;
     width: 320px;
     height: 700px;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 }
 
-.login-form {
+.login-form, .register-form {
 
 }
 
 label {
     margin-bottom: 8px;
-    color: white;
+    color: black;
 }
 .input-box {
     display: flex;
@@ -60,21 +102,46 @@ button {
     font-family: Helvetica;
     color: white;
     font-weight: bold;
-    background-color: hsl(46.67deg 70.32% 50.75%);
+    background-color: hsl(209.84deg 100% 40.18%);
+}
+button:hover {
+    cursor: pointer;
 }
 
 input {
+    border: 1px solid hsl(46.67deg 20% 50%);
     background-color: hsl(46.67deg 24.32% 92.75%);
+    padding: 10px;
 }
 
-.register-text > p {
+.register-text > p,
+.login-text > p
+{
     align-self: center;
     font-weight: 100;
-    color: white;
+    color: hsl(46.67deg 20% 10%);
     margin: 0px;
     text-align: center;
 }
 
 .link {
-    color: red;
+    color: hsl(209.84deg 100% 40.18%);
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/*Milestone 2 Styling*/
+.page-dashboard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#previous-button,
+#next-button
+{
+    width: 100px;
 }

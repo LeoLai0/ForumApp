@@ -3,39 +3,130 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>LurkForWork</title>
+    <title>Qanda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- You can add your styles and scripts here -->
     <link rel="stylesheet" type="text/css" media="screen" href="styles/global.css" />
 </head>
 <body>
     <!-- Login Page --> 
-    <div class="login-container">
-        <img class="qanda-logo"src="images/qanda-logo.jpg" alt="qanda logo in black font surrounded by backgroun in an eggshell color"/>
-        <div class="login-form">
-            <form action="#">
-                <div class="input-box">
-                    <label>Email</label>
-                    <input type="email" required>
-                </div>
-                <div class="input-box">
-                    <label>Password</label>
-                    <input type="password" required>
-                </div>
-                <div class="submit-box">
-                    <button>Submit</button>
-                </div>
-                <div class="register-text">
-                    <p>
-                        Need to <a class="link" href="/frontend/register.html">create an account?</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
+    <header>
+        <img class="qanda-logo"src="images/qanda-logo.jpg" alt="qanda logo in black font surrounded by background in an eggshell color"/>
+        <nav id="navigation" style="display: block;">
+            <button class="nav-item" id="nav-register">Register</li>
+            <button class="nav-item" id="nav-login">Login</li>
+            <button class="nav-item" id="nav-logout">Logout</li>
+            <button class="nav-item" id="nav-create">Create</button>
+            <button class="nav-item" id="nav-cancel">Cancel</button>
+        </nav>
+    </header>
     
     <main role="main">
-        <!-- app goes here --> 
+        <div id="page-login" style="display: none;">
+            <div class="login-form">
+                <form action="#">
+                    <div class="input-box">
+                        <label>Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="input-box">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <div class="submit-box">
+                        <button id="login-user">Submit</button>
+                    </div>
+                    <div class="register-text">
+                        <p>
+                            Need to <a class="link" id="login-to-register">create an account?</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="page-register" style="display: none;">
+            <div class="register-form">
+                <form action="#">
+                    <div class="input-box">
+                        <label>Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="input-box">
+                      <label>Name</label>
+                      <input type="text" id="register-name" required>
+                    </div>
+                    <div class="input-box">
+                        <label>Password</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <div class="input-box">
+                        <label>Confirm Password</label>
+                        <input type="password" id="register-confirm-password" required>
+                    </div>
+                    <div class="submit-box">
+                        <button id="register-user">Create Account</button>
+                    </div>
+                    <div class="login-text">
+                        <p>
+                            Already have an account? <a class="link" id="register-to-login">Log in</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="page-create-thread" style="display: none;">
+            <form id="thread-create-form"action="#">
+                <label>Title</label>
+                <input type="text" id="thread-title"/><br/>
+                
+                <label>Content</label>
+                <input type="text" id="thread-content"/><br/>
+                
+                <label>Make Public?</label>
+                <input type="checkbox" id="thread-make-public"/><br/>
+
+                <button id="post-thread">Post Thread</button>
+
+            </ul>
+        </div>
+
+        <div id="page-dashboard" style="display: none;">
+            
+            <div id="threads-container">
+                <h2>Threads</h2>
+                <div id="threads-list"></div>
+                <button id="previous-button">Previous</button>
+                <button id="next-button">Next</button>
+            </div>
+
+            <div id="single-thread-container">
+                <button id="thread-edit">Edit</button>
+                <button id="thread-delete">Delete</button>
+                <button id="thread-like">Like</button>
+                <button id="thread-watch">Watch</button>
+                <div id="single-thread"></div>
+            </div>
+            <div id="page-edit-thread" style="display: none;">
+                <form id="thread-edit-form" action="#">
+                    <Label>Title</Label>
+                    <input type="text" id="edit-title"/><br/>
+
+                    <label>Content</label>
+                    <input type="text" id="edit-content"><br/>
+
+                    <label>Public post?</label>
+                    <input type="checkbox" id="edit-public-status"/><br/>
+
+                    <label>Locked?</label>
+                    <input type="checkbox" id="edit-lock-status"/><br/>
+
+                    <button id="submit-edit">Submit Changes</button>
+                </form>
+            </div>
+        </div>
+
     </main>
     <script type="module" src="src/main.js"></script>
 </body>
