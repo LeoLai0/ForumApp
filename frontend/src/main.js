@@ -35,11 +35,13 @@ const goToPage = (selectPage) => {
       user = object.creatorId;
     })
     .then(() => {
-      console.log(user);
-      console.log(parseInt(loggedId));
       if (user === parseInt(loggedId)) {
-        document.getElementById('thread-edit').style.display = 'block';
-        document.getElementById('thread-delete').style.display = 'block';
+        for (const threadButton of threadButtons) {
+          document.getElementById(`thread-${threadButton}`).style.display = 'block';
+        }
+      } else {
+        document.getElementById('thread-like').style.display = 'block';
+        document.getElementById('thread-watch').style.display = 'block';
       }
     })
 
@@ -141,6 +143,74 @@ document.getElementById('thread-delete').addEventListener('click', () => {
   });
 });
 
+const threadPutHelper = (requestBody, interactiveComponent) => {
+  const f = fetch(`http://localhost:${BACKEND_PORT}/` + `thread/${interactiveComponent}`, {
+    method: 'PUT',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': token,
+    },
+    body: JSON.stringify(requestBody)
+  });
+  f.then((response) => {
+    response.json().then((data) => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        goToPage("dashboard");
+        openSingleThread();
+        loadThreads();
+        document.getElementById('thread-create-form').reset();
+      }
+    })
+  });
+};
+
+
+document.getElementById('thread-like').addEventListener('click', () => {
+  getAllThreadInfo(openThread).then((e) => {
+    console.log(e);
+    if (!e.likes.includes(parseInt(loggedId))) {
+      const requestBody = {
+        id: openThread,
+        turnon: true
+      };
+      threadPutHelper(requestBody, threadButtons[2]);
+      document.getElementById('thread-like').innerHTML = 'Liked';
+    } else {
+      const requestBody = {
+        id: openThread,
+        turnon: false
+      };
+      threadPutHelper(requestBody, threadButtons[2]);
+      document.getElementById('thread-like').innerHTML = 'Like';
+    }
+  });
+
+});
+
+
+
+document.getElementById('thread-watch').addEventListener('click', () => {
+  getAllThreadInfo(openThread).then((e) => {
+    console.log(e);
+    if (!e.watchees.includes(parseInt(loggedId))) {
+      const requestBody = {
+        id: openThread,
+        turnon: true
+      };
+      threadPutHelper(requestBody, threadButtons[3]);
+      document.getElementById('thread-watch').innerHTML = 'Watching';
+    } else {
+      const requestBody = {
+        id: openThread,
+        turnon: false
+      };
+      threadPutHelper(requestBody, threadButtons[3]);
+      document.getElementById('thread-watch').innerHTML = 'Watch';
+    }
+  });
+});
 
 /* Login user event listener */
 document.getElementById('login-user').addEventListener('click', () => {
@@ -332,12 +402,11 @@ const getThreadInfo = (getThread, parent) => {
         let dateDOM = document.createElement('div');
         dateDOM.innerHTML = data.createdAt;
         
-        let numberLikesDOM = document.createElement('div');
-        if (!data.likes.includes(data.creatorId)) {
-          data.likes.push(data.creatorId);
-        }
+        let numLikesDOM = document.createElement('div');
+        numLikesDOM.innerHTML = "Likes: " + data.likes.length;
 
-        numberLikesDOM.innerHTML = data.likes.length;
+        let numWatcheesDOM = document.createElement('div');
+        numLikesDOM.innerHTML = "Watchees: " + data.watchees.length;
 
         let authorDOM = document.createElement('div');
         getUserInfo(data.creatorId)
@@ -351,7 +420,8 @@ const getThreadInfo = (getThread, parent) => {
         parent.appendChild(titleDOM);
         parent.appendChild(dateDOM);
         parent.appendChild(authorDOM);
-        parent.appendChild(numberLikesDOM);
+        parent.appendChild(numLikesDOM);
+        parent.appendChild(numWatcheesDOM);
       }
     })
   });
@@ -378,14 +448,17 @@ const openSingleThread = () => {
         contentDOM.innerHTML = data.content;
 
         const numLikesDOM = document.createElement('div');
-        numLikesDOM.innerHTML = data.likes.length;
+        numLikesDOM.innerHTML = "Likes: " + data.likes.length;
+
+        const numWatcheesDOM = document.createElement('div');
+        numWatcheesDOM.innerHTML = "Watchers: " + data.watchees.length;
 
         const singleThread = document.getElementById('single-thread');
         singleThread.innerHTML = '';
         singleThread.appendChild(titleDOM);
         singleThread.appendChild(contentDOM);
         singleThread.appendChild(numLikesDOM);
-
+        singleThread.appendChild(numWatcheesDOM);
         openThread = data.id;
         localStorage.setItem('threadId', openThread);
 
@@ -416,7 +489,6 @@ const getAllThreadInfo = (getThread) => {
           localStorage.removeItem('threadId');
           reject(data.error);
         } else {
-          console.log(data);
           resolve(data);
         }
       })
@@ -441,10 +513,7 @@ document.getElementById('thread-edit').addEventListener('click', () => {
     document.getElementById('edit-title').value = title
     document.getElementById("edit-content").value = content
     document.getElementById("edit-public-status").checked = isPublic;
-
-    console.log(isLocked);
     document.getElementById("edit-lock-status").checked = isLocked;
-    console.log(document.getElementById("edit-lock-status").checked);
   });
 
   goToPage('edit-thread');
@@ -462,7 +531,6 @@ document.getElementById('submit-edit').addEventListener('click', () =>{
   let isPublic = document.getElementById("edit-public-status").checked;
   let isLocked = document.getElementById("edit-lock-status").checked;
 
-  console.log(isLocked);
   const f = fetch(`http://localhost:${BACKEND_PORT}/` + "thread", {
     method: 'PUT',
     headers: {
@@ -480,8 +548,6 @@ document.getElementById('submit-edit').addEventListener('click', () =>{
   f.then((response) => {
     response.json().then((data) => {
       if (data.error) {
-        console.log('the error is within lock');
-        console.log(data.error);
         alert(data);
       } else {
         openSingleThread();
