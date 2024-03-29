@@ -156,17 +156,15 @@ button:hover,
 }
 
 /* Thread List Styling */
-
 #threads-container {
     display: block;
     border-right: 0.1px solid hsl(46.67deg, 11%, 69%);
     font-size: 0.9rem;
-    flex: 1;
-    width: 23%;
+    width: 250px;
 }
 
 #threads-list {
-    height: 500px;
+    height: 75%;
     overflow: auto;
 }
 
@@ -228,6 +226,20 @@ button:hover,
     background-color: transparent;
 }
 
+.metadata-container,
+.time-name-container,
+.like-watchees-container
+{
+    display: flex;
+    flex-direction: row;
+    font-size: 0.5rem;
+    justify-content: space-between;
+}
+.time-name-container > *,
+.like-watchees-container > * {
+    margin: 0px 5px;
+}
+
 /* Single Thread Styling */
 #page-edit-thread,
 #single-thread-container {
@@ -235,9 +247,8 @@ button:hover,
     margin-top: 30px;
     margin-left: 20px;
     margin-right: 20px;
-    flex: 3;
+    flex: 2;
 }
-
 .thread-title {
     font-weight: lighter;
     word-wrap: break-word;
@@ -317,10 +328,20 @@ button:hover,
 
 /* Comments Styling */
 #thread-comments {
-    overflow: auto;
     height: 300px;
+    overflow: auto;
 }
 
+@media (min-height: 800px) {
+    #thread-comments {
+        height: 40vh;
+    }
+}
+@media (min-height: 1000px) {
+    #thread-comments {
+        height: 60vh;
+    }
+}
 #thread-comments > .body-container {
     margin: 10px 0px 10px 10px;
 }
@@ -346,14 +367,46 @@ button:hover,
     margin-left: 10px;
 }
 
+
+/* Modal Styling */
+.modal {
+    align-self: center;
+    justify-self: center;
+    border-radius: 15px;
+    border: none;
+    box-shadow: 4px 7px 7px hsl(0deg 0 0 /0.4);
+    padding: 10px
+}
+
+.cancel-container {
+    display: flex;
+    width: 100%;
+    flex-direction: row-reverse;
+}
+
+#modal-cancel {
+    background-color: transparent;
+    color: hsl(46.67deg, 5%, 46%);
+    width: 1rem;
+}
+
+#reply-content {
+    height: 300px;
+    margin: 10px 0px;
+
+}
+
+/* Button Styling */
 .nav-item,
 #thread-post,
 #comment-post,
 #previous-button,
-#next-button
+#next-button,
+#reply-post,
+#reply-edit
 {
     border: 1px solid hsl(46.67deg, 5%, 46%);
-    background-color: transparent;
+    background-color: hsl(46.67deg 24.32% 92.75%);
     color: black;
 }
 
@@ -361,7 +414,9 @@ button:hover,
 #thread-post:hover,
 #comment-post:hover,
 #previous-button:hover,
-#next-button:hover
+#next-button:hover,
+#reply-post:hover,
+#reply-edit:hover
 {
     background-color: hsl(209.84deg 100% 40.18%);
     transition: 0.2s;

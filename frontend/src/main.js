@@ -122,7 +122,7 @@ document.getElementById('previous-button').addEventListener('click', () => {
   }
   loadThreads();
 });
-document.getElementById('reply-cancel').addEventListener('click', () => {
+document.getElementById('modal-cancel').addEventListener('click', () => {
   document.getElementById('page-reply').close();
 });
 
@@ -439,6 +439,34 @@ const getUserInfo = (userId) => {
   
 }
 
+// Helper function for converting time:
+const convertTime = (inputTime) => {
+  const commentTime = new Date();
+  const threadTime = new Date(inputTime);
+  const secondsDiff = Math.floor((commentTime - threadTime) / 1000);
+
+  const secMin = 60;
+  const secHour = 3600;
+  const secDay = 86400;
+  const secWeek = 604800;
+
+  if (secondsDiff < secMin) {
+      return "Just now";
+  } else if (secondsDiff < secHour) {
+      const minutes = Math.floor(secondsDiff / secMin);
+      return `${minutes} minute(s) ago`;
+  } else if (secondsDiff < secDay) {
+      const hours = Math.floor(secondsDiff / secHour);
+      return `${hours} hour(s) ago`;
+  } else if (secondsDiff < secWeek) {
+      const days = Math.floor(secondsDiff / secDay);
+      return `${days} day(s) ago`;
+  } else {
+      const weeks = Math.floor(secondsDiff / secWeek);
+      return `${weeks} week(s) ago`;
+  }
+}
+
 // Helper function for retrieving necessary Thread Info
 const getThreadInfo = (getThread, parent) => {
   const f = fetch(`http://localhost:${BACKEND_PORT}/` + `thread?id=${getThread}`, {
@@ -454,16 +482,32 @@ const getThreadInfo = (getThread, parent) => {
         alert(data.error);
       } else {
         let titleDOM = document.createElement('div');
+        titleDOM.setAttribute('class', 'thread-list-header');
         titleDOM.innerHTML = data.title;
 
+        let metadataDOM = document.createElement('div');
+        metadataDOM.setAttribute('class', 'metadata-container');
+
+        let timeNameDOM = document.createElement('div');
+        timeNameDOM.setAttribute('class', 'time-name-container');
+
         let dateDOM = document.createElement('div');
-        dateDOM.innerHTML = data.createdAt;
+        dateDOM.setAttribute('class', 'thread-list-date');
+        dateDOM.innerHTML = convertTime(data.createdAt);
         
+        let likesWatcheesDOM = document.createElement('div');
+        likesWatcheesDOM.setAttribute('class', 'like-watchees-container');
+
         let numLikesDOM = document.createElement('div');
+        numLikesDOM.setAttribute('class', 'thread-list-likes');
         numLikesDOM.innerHTML = "Likes: " + data.likes.length;
 
         let numWatcheesDOM = document.createElement('div');
+        numWatcheesDOM.setAttribute('class', 'thread-list-watchees');
         numWatcheesDOM.innerHTML = "Watchees: " + data.watchees.length;
+
+        likesWatcheesDOM.appendChild(numLikesDOM);
+        likesWatcheesDOM.appendChild(numWatcheesDOM);
 
         let authorDOM = document.createElement('div');
         getUserInfo(data.creatorId)
@@ -473,12 +517,14 @@ const getThreadInfo = (getThread, parent) => {
           .catch((error) => {
             console.error("Error getting user info", error);
           });
+        timeNameDOM.appendChild(authorDOM);
+        timeNameDOM.appendChild(dateDOM);
+
+        metadataDOM.appendChild(timeNameDOM);
+        metadataDOM.appendChild(likesWatcheesDOM);
 
         parent.appendChild(titleDOM);
-        parent.appendChild(dateDOM);
-        parent.appendChild(authorDOM);
-        parent.appendChild(numLikesDOM);
-        parent.appendChild(numWatcheesDOM);
+        parent.appendChild(metadataDOM);
       }
     })
   });
@@ -518,7 +564,7 @@ const openSingleThread = () => {
         const userName = document.createElement('h3');
         const threadTime = document.createElement('div');
         threadTime.setAttribute('class', 'time-created');
-        threadTime.innerHTML = data.createdAt;
+        threadTime.innerHTML = convertTime(data.createdAt);
 
         userInfoDOM.setAttribute('class', 'user-info');
 
@@ -712,7 +758,7 @@ const getAllComments = () => {
             const userName = document.createElement('h2');
             const threadTime = document.createElement('div');
             threadTime.setAttribute('class', 'time-created');
-            threadTime.innerHTML = comment.createdAt;
+            threadTime.innerHTML = convertTime(comment.createdAt);
     
             userInfoDOM.setAttribute('class', 'user-info');
     

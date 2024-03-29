@@ -26,11 +26,11 @@
             <div class="login-form">
                 <form action="#">
                     <div class="input-box">
-                        <label>Email</label>
+                        <label for="login-email">Email</label>
                         <input type="email" id="login-email" required>
                     </div>
                     <div class="input-box">
-                        <label>Password</label>
+                        <label for="login-password">Password</label>
                         <input type="password" id="login-password" required>
                     </div>
                     <div class="submit-box">
@@ -49,19 +49,19 @@
             <div class="register-form">
                 <form action="#">
                     <div class="input-box">
-                        <label>Email</label>
+                        <label for="register-email">Email</label>
                         <input type="email" id="register-email" required>
                     </div>
                     <div class="input-box">
-                      <label>Name</label>
+                      <label for="register-name">Name</label>
                       <input type="text" id="register-name" required>
                     </div>
                     <div class="input-box">
-                        <label>Password</label>
+                        <label for="register-password">Password</label>
                         <input type="password" id="register-password" required>
                     </div>
                     <div class="input-box">
-                        <label>Confirm Password</label>
+                        <label for="register-confirm-password">Confirm Password</label>
                         <input type="password" id="register-confirm-password" required>
                     </div>
                     <div class="submit-box">
@@ -78,10 +78,10 @@
 
         <div id="page-create-thread">
             <form id="thread-create-form"action="#">
-                <label>Title</label><br/>
+                <label for="thread-title">Title</label><br/>
                 <input type="text" id="thread-title"/><br/>
                 
-                <label>Content</label><br/>
+                <label for="thread-content">Content</label><br/>
                 <input type="text" id="thread-content"/><br/>
                 <div class="checkboxes-container">
                     <label for="thread-make-public">Make Public?</label>
@@ -125,17 +125,17 @@
             </div>
             <div id="page-edit-thread">
                 <form id="thread-edit-form" action="#">
-                    <label>Title</label><br/>
+                    <label for="edit-title">Title</label><br/>
                     <input type="text" id="edit-title"/><br/>
 
-                    <label>Content</label><br/>
+                    <label for="edit-content">Content</label><br/>
                     <input type="text" id="edit-content"><br/>
 
                     <div class="checkboxes-container">
-                        <label>Public post?</label>
+                        <label for="edit-public-status">Public post?</label>
                         <input type="checkbox" id="edit-public-status"/><br/>
     
-                        <label>Locked?</label>
+                        <label for="edit-lock-status">Locked?</label>
                         <input type="checkbox" id="edit-lock-status"/><br/>
                     </div>
 
@@ -145,12 +145,13 @@
             
         </div>
         <dialog class="modal" id="page-reply">
+            
             <form id="comment-reply-form" action="#">
-                <button id="reply-cancel">Cancel</button>
+                <div class="cancel-container">
+                    <button id="modal-cancel">x</button>
+                </div>
                 <h2>Create Reply</h2>
-                <label>
-                    content
-                </label>
+                <label for="reply-content">Content</label><br/>
                 <input type="text" id="reply-content" placeholder="Add your reply here!">
                 <button id="reply-post">Post Reply</button>
                 <button id="reply-edit">Submit Comment Changes</button>
