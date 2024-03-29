@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     height: 100%;
     font-family: Helvetica;
+    font-size: 1em;
 }
 
 html {
@@ -35,32 +36,24 @@ main {
     box-sizing: border-box;
 }
 
-header {
+.navigation-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 20px 40px;
+    padding: 0px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 99;
+    border-bottom: 1px solid hsl(46.67deg 20% 50%);
 }
 
 .nav-item {
     width: 130px;
     height: 50px;
-    background-color: transparent;
-    color: black;
-    border: 1px solid hsl(46.67deg 20% 50%);
     border-radius: 5px;
     margin-left: 20px;
-}
-.nav-item:hover {
-    background-color: hsl(209.84deg 100% 40.18%);
-    transition: 0.2s;
-    border: 0;
-    color: white;
 }
 
 /* Milestone 1 Styling */
@@ -74,19 +67,17 @@ header {
     align-items: center;
 }
 
-.login-form, .register-form {
-
-}
-
 label {
     margin-bottom: 8px;
     color: black;
 }
+
 .input-box {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
 }
+
 input, button {
     height: 45px;
     border: 0px;
@@ -98,15 +89,16 @@ input, button {
 .submit-box {
     padding: 18.5px 0px 18.5px;
 }
-button {
+
+#login-user,
+#register-user
+{
     font-family: Helvetica;
     color: white;
     font-weight: bold;
     background-color: hsl(209.84deg 100% 40.18%);
 }
-button:hover {
-    cursor: pointer;
-}
+
 
 input {
     border: 1px solid hsl(46.67deg 20% 50%);
@@ -130,18 +122,249 @@ input {
 
 .link:hover {
     text-decoration: underline;
+}
+
+button:hover,
+.link:hover
+{
     cursor: pointer;
 }
 
 /*Milestone 2 Styling*/
-.page-dashboard {
+#page-dashboard {
+    margin-top: 100px;
+    width: 100%;
+    height: 85%;
+    font-size: 0.9rem;
+    overflow: hidden;
+    align-self: flex-start;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.prev-next-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
 }
 
 #previous-button,
 #next-button
 {
     width: 100px;
+}
+
+/* Thread List Styling */
+
+#threads-container {
+    display: block;
+    border-right: 0.1px solid hsl(46.67deg, 11%, 69%);
+    font-size: 0.9rem;
+    flex: 1;
+    width: 23%;
+}
+
+#threads-list {
+    height: 500px;
+    overflow: auto;
+}
+
+#threads-list > * {
+    border: 0.1px solid hsl(46.67deg, 11%, 69%);
+    border-right: none;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+#threads-header {
+    text-align: center;
+    padding: 10px 0px;
+}
+
+#page-create-thread,
+#page-edit-thread
+{
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#thread-title,
+#thread-content
+{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#edit-title,
+#edit-content,
+#submit-edit
+{
+    width: 75%;
+    margin-bottom: 10px
+}
+
+#thread-content,
+#edit-content
+{
+    height: 250px;
+}
+
+.checkboxes-container > * {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    vertical-align: top;
+}
+
+#thread-post,
+#submit-edit
+{
+    border: 1px solid hsl(46.67deg, 5%, 46%);
+    background-color: transparent;
+}
+
+/* Single Thread Styling */
+#page-edit-thread,
+#single-thread-container {
+    width: 75%;
+    margin-top: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+    flex: 3;
+}
+
+.thread-title {
+    font-weight: lighter;
+    word-wrap: break-word;
+}
+
+.comment-title {
+    font-weight: lighter;
+}
+
+.thread-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: space-around;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.stats-container > * {
+    margin: 0px 10px;
+    text-align: center;
+}
+
+.single-thread-buttons {
+    display: flex;
+}
+
+.edit-button,
+.delete-button
+{
+    background-color: transparent;
+    font-size: 0.8rem;
+    color: hsl(46.67deg, 5%, 46%);
+    width: 50px;
+    height: 1.1rem;
+    text-align: start;
+}
+
+.edit-button:hover, 
+.delete-button:hover {
+    text-decoration: underline;
+}
+
+.edit-delete-container {
+    display: flex;
+}
+
+.body-container {
+    margin: 30px 0px 30px 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.like-button,
+.watch-button
+{
+    width: 70px;
+    justify-self: center;
+    border: 0.5px solid hsl(46.67deg, 11%, 69%);
+}
+
+.content-container {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-wrap: break-word;
+}
+
+.time-created {
+    font-size: 0.8rem;
+    color: hsl(46.67deg, 5%, 46%);
+}
+
+/* Comments Styling */
+#thread-comments {
+    overflow: auto;
+    height: 300px;
+}
+
+#thread-comments > .body-container {
+    margin: 10px 0px 10px 10px;
+}
+
+.comment-reply {
+    width: 100%;
+    height: 2rem;
+    border: 1px solid hsl(46.67deg, 5%, 46%);
+    margin: 10px 0px
+}
+
+.add-comment-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#comment-content {
+    width: 75%;
+}
+
+#comment-post {
+    width: 22%;
+    margin-left: 10px;
+}
+
+.nav-item,
+#thread-post,
+#comment-post,
+#previous-button,
+#next-button
+{
+    border: 1px solid hsl(46.67deg, 5%, 46%);
+    background-color: transparent;
+    color: black;
+}
+
+.nav-item:hover,
+#thread-post:hover,
+#comment-post:hover,
+#previous-button:hover,
+#next-button:hover
+{
+    background-color: hsl(209.84deg 100% 40.18%);
+    transition: 0.2s;
+    border: 0;
+    color: white;
 }

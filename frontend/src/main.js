@@ -5,7 +5,9 @@ import { fileToDataUrl } from './helpers.js';
 let token = null;
 let loggedId = null;
 let openThread = null;
+let parentCommentId = null;
 let threadCount = 0;
+let editCommentId = null;
 const pages = ['login', 'register', 'dashboard', 'create-thread','edit-thread'];
 const navButtons = ['login', 'register', 'logout', 'create', 'cancel'];
 const threadButtons = ['edit', 'delete', 'like', 'watch'];
@@ -30,20 +32,31 @@ const goToPage = (selectPage) => {
     document.getElementById('nav-login').style.display = 'block';
   } else if (['dashboard'].includes(selectPage)) {
     let user;
+    let lockedStatus;
     getAllThreadInfo(openThread)
     .then((object) => {
       user = object.creatorId;
+      lockedStatus = object.lock;
     })
-    .then(() => {
+    .then((object) => {
       if (user === parseInt(loggedId)) {
         for (const threadButton of threadButtons) {
-          document.getElementById(`thread-${threadButton}`).style.display = 'block';
+          if (['like'].includes(threadButton)) {
+            if(!lockedStatus) {
+              document.getElementById(`thread-${threadButton}`).style.display = 'block';    
+            }
+          } else {
+            document.getElementById(`thread-${threadButton}`).style.display = 'block';
+          }
         }
       } else {
-        document.getElementById('thread-like').style.display = 'block';
+        if (!lockedStatus) {
+          document.getElementById('thread-like').style.display = 'block';
+        }
         document.getElementById('thread-watch').style.display = 'block';
       }
     })
+    getAllComments();
 
     document.getElementById('nav-logout').style.display = 'inline-block';
     document.getElementById('nav-create').style.display = 'inline-block';
@@ -109,18 +122,48 @@ document.getElementById('previous-button').addEventListener('click', () => {
   }
   loadThreads();
 });
+document.getElementById('reply-cancel').addEventListener('click', () => {
+  document.getElementById('page-reply').close();
+});
 
 const nullThreadIndicator = () => {
   openThread = null;
   localStorage.removeItem('threadId');
+  document.getElementById('no-thread-selected').style.display = 'block';
   const singleThread = document.getElementById('single-thread');
-  singleThread.innerHTML = "Select a thread to view!";
+  singleThread.innerHTML = '';
 }
 
 document.getElementById('thread-delete').addEventListener('click', () => {
   const requestBody = {
     id: openThread
   };
+  getAllComments()
+  .then((comments) => {
+    for (const comment of comments) {
+      const commentDeleteBody = {
+        id: comment.id,
+      }
+      fetch(`http://localhost:${BACKEND_PORT}/` + "comment", {
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': token,
+        },
+        body: JSON.stringify(commentDeleteBody)
+      })
+      .then((response) => {
+        response.json().then((data) => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            document.getElementById('thread-create-form').reset();
+          }
+        })
+      });
+    }
+  })
+
   const f = fetch(`http://localhost:${BACKEND_PORT}/` + "thread", {
     method: 'DELETE',
     headers: {
@@ -136,11 +179,13 @@ document.getElementById('thread-delete').addEventListener('click', () => {
       } else {
         goToPage("dashboard");
         nullThreadIndicator();
+        getAllComments();
         loadThreads();
         document.getElementById('thread-create-form').reset();
       }
     })
   });
+
 });
 
 const threadPutHelper = (requestBody, interactiveComponent) => {
@@ -166,40 +211,45 @@ const threadPutHelper = (requestBody, interactiveComponent) => {
   });
 };
 
-
 document.getElementById('thread-like').addEventListener('click', () => {
   getAllThreadInfo(openThread).then((e) => {
-    console.log(e);
-    if (!e.likes.includes(parseInt(loggedId))) {
+    if (!e.lock) {
+      if (!e.likes.includes(parseInt(loggedId))) {
       const requestBody = {
-        id: openThread,
-        turnon: true
-      };
-      threadPutHelper(requestBody, threadButtons[2]);
-      document.getElementById('thread-like').innerHTML = 'Liked';
-    } else {
-      const requestBody = {
-        id: openThread,
-        turnon: false
-      };
-      threadPutHelper(requestBody, threadButtons[2]);
-      document.getElementById('thread-like').innerHTML = 'Like';
+          id: openThread,
+          turnon: true
+        };
+        threadPutHelper(requestBody, threadButtons[2]);
+        document.getElementById('thread-like').innerHTML = 'Liked';
+        document.getElementById('thread-like').style.backgroundColor = 'hsl(355deg, 100%, 60%)';
+        document.getElementById('thread-like').style.color = 'white';
+        document.getElementById('thread-like').style.border = 'none';
+      } else {
+        const requestBody = {
+          id: openThread,
+          turnon: false
+        };
+        threadPutHelper(requestBody, threadButtons[2]);
+        document.getElementById('thread-like').innerHTML = 'Like';
+        document.getElementById('thread-like').style.backgroundColor = 'transparent';
+        document.getElementById('thread-like').style.color = 'black';
+        document.getElementById('thread-like').style.border = '1px solid hsl(46.67deg, 11%, 69%)';
+      }
     }
   });
-
 });
-
-
 
 document.getElementById('thread-watch').addEventListener('click', () => {
   getAllThreadInfo(openThread).then((e) => {
-    console.log(e);
     if (!e.watchees.includes(parseInt(loggedId))) {
       const requestBody = {
         id: openThread,
         turnon: true
       };
       threadPutHelper(requestBody, threadButtons[3]);
+      document.getElementById('thread-watch').style.backgroundColor = 'hsl(209.84deg 100% 40.18%)';
+      document.getElementById('thread-watch').style.color = 'white';
+      document.getElementById('thread-watch').style.border = 'none';
       document.getElementById('thread-watch').innerHTML = 'Watching';
     } else {
       const requestBody = {
@@ -207,6 +257,10 @@ document.getElementById('thread-watch').addEventListener('click', () => {
         turnon: false
       };
       threadPutHelper(requestBody, threadButtons[3]);
+      document.getElementById('thread-watch').innerHTML = 'Like';
+      document.getElementById('thread-watch').style.backgroundColor = 'transparent';
+      document.getElementById('thread-watch').style.color = 'black';
+      document.getElementById('thread-watch').style.border = '1px solid hsl(46.67deg, 11%, 69%)';
       document.getElementById('thread-watch').innerHTML = 'Watch';
     }
   });
@@ -282,7 +336,7 @@ document.getElementById('register-user').addEventListener('click', () => {
 });
 
 // Milestone 2: Threading
-document.getElementById('post-thread').addEventListener('click', () => {
+document.getElementById('thread-post').addEventListener('click', () => {
   const title = document.getElementById('thread-title').value;
   const isPublic = document.getElementById('thread-make-public').checked;
   const content = document.getElementById('thread-content').value;
@@ -321,6 +375,8 @@ document.getElementById('post-thread').addEventListener('click', () => {
   }
 });
 
+
+
 // Helper Function for Loading Threads.
 const loadThreads = () => {
   const f = fetch(`http://localhost:${BACKEND_PORT}/` + `threads?start=${threadCount}`, {
@@ -347,6 +403,7 @@ const loadThreads = () => {
           threadDom.addEventListener('click', () => {
             openThread = threadId;
             localStorage.setItem('threadId', openThread);
+            getAllComments();
             openSingleThread();
           })
         }
@@ -371,7 +428,7 @@ const getUserInfo = (userId) => {
           alert(data.error);
           reject(data.error);
         } else {
-          resolve(data.name);
+          resolve(data);
         }
       })
     })
@@ -406,12 +463,12 @@ const getThreadInfo = (getThread, parent) => {
         numLikesDOM.innerHTML = "Likes: " + data.likes.length;
 
         let numWatcheesDOM = document.createElement('div');
-        numLikesDOM.innerHTML = "Watchees: " + data.watchees.length;
+        numWatcheesDOM.innerHTML = "Watchees: " + data.watchees.length;
 
         let authorDOM = document.createElement('div');
         getUserInfo(data.creatorId)
-          .then((userName) => {
-            authorDOM.innerHTML = userName;
+          .then((data) => {
+            authorDOM.innerHTML = data.name;
           })
           .catch((error) => {
             console.error("Error getting user info", error);
@@ -441,24 +498,78 @@ const openSingleThread = () => {
       if (data.error) {
         nullThreadIndicator();
       } else {
-        const titleDOM = document.createElement('div');
+        if (data.islocked) {
+          document.getElementById('thread-comments-container').style.display = 'none';
+          return;
+        }
+        const titleDOM = document.createElement('h1');
+        titleDOM.setAttribute('class', 'thread-title')
         titleDOM.innerHTML = data.title;
 
-        const contentDOM = document.createElement('div');
-        contentDOM.innerHTML = data.content;
+        const threadDetailDOM = document.createElement('div');
+        threadDetailDOM.setAttribute('class', 'thread-info');
 
+        const profileDOM = document.createElement('div');
+        const profilePictureDOM = document.createElement('div');
+        const userInfoDOM = document.createElement('div');
+        profileDOM.appendChild(profilePictureDOM);
+        profileDOM.appendChild(userInfoDOM);
+
+        const userName = document.createElement('h3');
+        const threadTime = document.createElement('div');
+        threadTime.setAttribute('class', 'time-created');
+        threadTime.innerHTML = data.createdAt;
+
+        userInfoDOM.setAttribute('class', 'user-info');
+
+        getUserInfo(data.creatorId)
+        .then((user) => {
+          profilePictureDOM.innerHTML = user.image;
+          userName.innerHTML = user.name;
+        });
+        userInfoDOM.appendChild(userName);
+        userInfoDOM.appendChild(threadTime);
+
+        threadDetailDOM.appendChild(userInfoDOM);
+
+        const statsDOM = document.createElement('div');
+        statsDOM.setAttribute('class', 'stats-container')
+        
         const numLikesDOM = document.createElement('div');
-        numLikesDOM.innerHTML = "Likes: " + data.likes.length;
+        numLikesDOM.innerHTML = data.likes.length;
+        const likesLabel = document.createElement('div');
+        likesLabel.innerHTML = 'Likes';
+        numLikesDOM.appendChild(likesLabel);
+        statsDOM.appendChild(numLikesDOM);
 
-        const numWatcheesDOM = document.createElement('div');
-        numWatcheesDOM.innerHTML = "Watchers: " + data.watchees.length;
+        const watchButton = document.getElementById('thread-watch');
+        statsDOM.appendChild(watchButton);
+
+        threadDetailDOM.appendChild(statsDOM);
+
+        const likeButton = document.getElementById('thread-like');
+        const editDeleteButton = document.createElement('div');
+        editDeleteButton.setAttribute('class', 'edit-delete-container')
+        const editButton = document.getElementById('thread-edit');
+        const deleteButton = document.getElementById('thread-delete');
+        editDeleteButton.appendChild(editButton);
+        editDeleteButton.appendChild(deleteButton);
+
+        const bodyDOM = document.createElement('div');
+        bodyDOM.setAttribute('class', 'body-container')
+        bodyDOM.appendChild(likeButton);
+
+        const contentDOM = document.createElement('div');
+        contentDOM.setAttribute('class', 'content-container');
+        contentDOM.innerHTML = data.content;
+        contentDOM.appendChild(editDeleteButton);
+        bodyDOM.appendChild(contentDOM);
 
         const singleThread = document.getElementById('single-thread');
         singleThread.innerHTML = '';
         singleThread.appendChild(titleDOM);
-        singleThread.appendChild(contentDOM);
-        singleThread.appendChild(numLikesDOM);
-        singleThread.appendChild(numWatcheesDOM);
+        singleThread.appendChild(threadDetailDOM);
+        singleThread.appendChild(bodyDOM);
         openThread = data.id;
         localStorage.setItem('threadId', openThread);
 
@@ -498,7 +609,7 @@ const getAllThreadInfo = (getThread) => {
 
 // adding an edit button that would work.
 document.getElementById('thread-edit').addEventListener('click', () => {
-  let creatorId
+  let creatorId;
   let title;
   let content;
   let isPublic;
@@ -517,11 +628,6 @@ document.getElementById('thread-edit').addEventListener('click', () => {
   });
 
   goToPage('edit-thread');
-  
-  // .then(() => {
-  //   document.getElementById()
-  // });
-  // // 
 });
 
 // submit changes
@@ -561,14 +667,251 @@ document.getElementById('submit-edit').addEventListener('click', () =>{
   });
 });
 
+// milestone 4: comments
+// Helper Function for Loading Comments and all details
+const getAllComments = () => {
+  return new Promise((resolve, reject) => {
+    const f = fetch(`http://localhost:${BACKEND_PORT}/` + `comments?threadId=${openThread}`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': token,
+      }
+    });
+    f.then((response) => {
+      let isLockedStatus;
+      getAllThreadInfo(parseInt(openThread)).then((thread) => {
+        isLockedStatus = thread.lock;
+        if (isLockedStatus) {
+          document.getElementById('thread-comments-container').style.display = 'none';
+          return;
+        }
+      });
+      if (openThread == null) {
+        document.getElementById('thread-comments-container').style.display = 'none';
+        return;
+      } else {
+        document.getElementById('thread-comments-container').style.display = 'block';
+        document.getElementById('no-thread-selected').style.display = 'none';
+      }
+      response.json().then((data) => {
+        if (data.error) {
+          alert(data.error);
+          reject(data.error);
+        } else {
+          document.getElementById('thread-comments').innerHTML = '';
+          for (const comment of data) {
+            let commentDOM = document.createElement('div');
+
+            const profileDOM = document.createElement('div');
+            const profilePictureDOM = document.createElement('div');
+            const userInfoDOM = document.createElement('div');
+            profileDOM.appendChild(profilePictureDOM);
+            profileDOM.appendChild(userInfoDOM);
+    
+            const userName = document.createElement('h2');
+            const threadTime = document.createElement('div');
+            threadTime.setAttribute('class', 'time-created');
+            threadTime.innerHTML = comment.createdAt;
+    
+            userInfoDOM.setAttribute('class', 'user-info');
+    
+            getUserInfo(comment.creatorId)
+            .then((user) => {
+              profilePictureDOM.innerHTML = user.image;
+              userName.innerHTML = user.name;
+            });
+            userInfoDOM.appendChild(userName);
+            userInfoDOM.appendChild(threadTime);
+            
+            // creating body
+            const bodyDOM = document.createElement('div');
+            bodyDOM.setAttribute('class', 'body-container');
+            let likeButton = document.createElement('button');
+            likeButton.setAttribute('id', `${comment.id}-like`);
+            likeButton.setAttribute('class', 'like-button');
+            likeButton.innerHTML = 'Like';
+
+            likeButton.addEventListener('click', () => {
+              if (!comment.likes.includes(parseInt(loggedId))) {
+                const requestBody = {
+                  id: comment.id,
+                  turnon: true,
+                };
+                likeComment(requestBody);
+              } else {
+                const requestBody = {
+                  id: comment.id,
+                  turnon: false,
+                };
+                likeComment(requestBody);
+              }
+            });
+
+            const likesDOM = document.createElement('div');
+            likesDOM.appendChild(likeButton);
+            const numLikes = document.createElement('div');
+            numLikes.innerHTML = comment.likes.length;
+            numLikes.style.textAlign = 'center';
+            likesDOM.appendChild(numLikes);
+
+            const contentDOM = document.createElement('div');
+            contentDOM.setAttribute('class', 'content-container');
+            contentDOM.innerHTML = comment.content;
+
+            let editButton = document.createElement('button');
+            editButton.setAttribute('id', `${comment.id}-edit`);
+            editButton.setAttribute('class', 'edit-button');
+            editButton.innerHTML = 'Edit';
+
+            editButton.addEventListener('click', () => {
+              document.getElementById('reply-content').value = comment.content;
+              document.getElementById('page-reply').showModal();
+              document.getElementById('reply-post').style.display = 'none';
+              document.getElementById('reply-edit').style.display = 'block';
+              editCommentId = comment.id;
+              localStorage.setItem('editCommentId', editCommentId);
+            });
+
+            contentDOM.appendChild(editButton);
+
+            bodyDOM.appendChild(likesDOM);
+            bodyDOM.appendChild(contentDOM);
+
+            // edit and reply buttons
+            let replyButton = document.createElement('button');
+            replyButton.setAttribute('class', 'comment-reply');
+            replyButton.setAttribute('id', `${comment.id}-reply-button`);
+            replyButton.innerHTML = 'Reply';
+            replyButton.addEventListener('click', (c) => {
+              document.getElementById('reply-content').value = "Reply to: " + comment.content + " - ";
+              document.getElementById('page-reply').showModal();
+              document.getElementById('reply-edit').style.display = 'none';
+              document.getElementById('reply-post').style.display = 'block';
+              parentCommentId = comment.id;
+              localStorage.setItem('parentCommentId', parentCommentId);
+            });
+
+            // adding to DOM.
+            commentDOM.appendChild(profileDOM);
+            commentDOM.appendChild(bodyDOM);
+            commentDOM.appendChild(replyButton);
+
+            let commentSection = document.getElementById('thread-comments');
+            commentSection.appendChild(commentDOM);
+          }
+          resolve(data);
+        }
+      })
+    });
+  })
+};
+
+// like a comment
+const likeComment = (requestBody) => {
+  const f = fetch(`http://localhost:${BACKEND_PORT}/` + 'comment/like', {
+    method: 'PUT',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': token,
+    },
+    body: JSON.stringify(requestBody)
+  });
+  f.then((response) => {
+    response.json().then((data) => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        goToPage("dashboard");
+        openSingleThread();
+        loadThreads();
+      }
+    })
+  });
+}
+
+// create comment/reply
+const commentReplyHelper = (requestType) => {
+  const content = document.getElementById(`${requestType}-content`).value.trim();
+  if (content === '') {
+    alert(`${requestType} cannot be empty to post`);
+    return;
+  }
+  const f = fetch(`http://localhost:${BACKEND_PORT}/` + "comment", {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': token,
+    },
+    body: JSON.stringify({
+      content: content,
+      threadId: openThread,
+      parentCommentId: parentCommentId,
+    })
+  });
+  f.then((response) => {
+    response.json().then((data) => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        document.getElementById('thread-comments').innerHTML = ''
+        goToPage("dashboard");
+        openSingleThread();
+      }
+    })
+  });
+};
+
+document.getElementById('comment-post').addEventListener('click', () => {
+  commentReplyHelper('comment', null);
+});
+
+document.getElementById('reply-post').addEventListener('click', () => {
+  commentReplyHelper('reply', parentCommentId);
+  document.getElementById('page-reply').close();
+});
+
+document.getElementById('reply-edit').addEventListener('click', () =>{
+  let content = document.getElementById("reply-content").value;
+  const f = fetch(`http://localhost:${BACKEND_PORT}/` + "comment", {
+    method: 'PUT',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': token,
+    },
+    body: JSON.stringify({
+      id: parseInt(editCommentId),
+      content: content
+    })
+  });
+  f.then((response) => {
+    response.json().then((data) => {
+      if (data.error) {
+        alert(data);
+      } else {
+        console.log(content);
+        document.getElementById('page-reply').close();
+        openSingleThread();
+        goToPage("dashboard");
+        loadThreads();
+        document.getElementById("reply-content").value = '';
+      }
+    })
+  });
+});
+
 // Check for persistence.
 if (localStorage.getItem('token')) {
   token = localStorage.getItem('token');
   loggedId = localStorage.getItem('loggedId');
   openThread = localStorage.getItem('threadId');
+  parentCommentId = localStorage.getItem('parentCommentId');
+  editCommentId = localStorage.getItem('editCommentId');
+  
   goToPage('dashboard');
   loadThreads();
   openSingleThread();
+  getAllComments();
 } else {
   goToPage('login');
 }

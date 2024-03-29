@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- Login Page --> 
-    <header>
+    <header class="navigation-header">
         <img class="qanda-logo"src="images/qanda-logo.jpg" alt="qanda logo in black font surrounded by background in an eggshell color"/>
         <nav id="navigation" style="display: block;">
             <button class="nav-item" id="nav-register">Register</li>
@@ -22,7 +22,7 @@
     </header>
     
     <main role="main">
-        <div id="page-login" style="display: none;">
+        <div id="page-login">
             <div class="login-form">
                 <form action="#">
                     <div class="input-box">
@@ -45,7 +45,7 @@
             </div>
         </div>
         
-        <div id="page-register" style="display: none;">
+        <div id="page-register">
             <div class="register-form">
                 <form action="#">
                     <div class="input-box">
@@ -76,55 +76,86 @@
             </div>
         </div>
 
-        <div id="page-create-thread" style="display: none;">
+        <div id="page-create-thread">
             <form id="thread-create-form"action="#">
-                <label>Title</label>
+                <label>Title</label><br/>
                 <input type="text" id="thread-title"/><br/>
                 
-                <label>Content</label>
+                <label>Content</label><br/>
                 <input type="text" id="thread-content"/><br/>
-                
-                <label>Make Public?</label>
-                <input type="checkbox" id="thread-make-public"/><br/>
+                <div class="checkboxes-container">
+                    <label for="thread-make-public">Make Public?</label>
+                    <input type="checkbox" id="thread-make-public"/><br/>
+                </div>
 
-                <button id="post-thread">Post Thread</button>
+                <button type="submit" id="thread-post">Post Thread</button>
 
             </ul>
         </div>
 
-        <div id="page-dashboard" style="display: none;">
-            
+        <div id="page-dashboard">
             <div id="threads-container">
-                <h2>Threads</h2>
+                <h2 id="threads-header">Threads</h2>
                 <div id="threads-list"></div>
-                <button id="previous-button">Previous</button>
-                <button id="next-button">Next</button>
+                <div class="prev-next-container">
+                    <button id="previous-button">Previous</button>
+                    <button id="next-button">Next</button>
+                </div>
             </div>
 
             <div id="single-thread-container">
-                <button id="thread-edit">Edit</button>
-                <button id="thread-delete">Delete</button>
-                <button id="thread-like">Like</button>
-                <button id="thread-watch">Watch</button>
+                <div id="no-thread-selected">Select a thread to view!</div>
+                <div class="single-thread-buttons">
+                    <button class="edit-button" id="thread-edit">Edit</button>
+                    <button class="delete-button" id="thread-delete">Delete</button>
+                    <button class="watch-button" id="thread-watch">Watch</button>
+                    <button class="like-button" id="thread-like">Like</button>
+                </div>
+                
                 <div id="single-thread"></div>
+                <div id="thread-comments-container">
+                    <h2 class="comment-title">Comments</h2>
+                    <div id="thread-comments"></div>
+                    <div class="add-comment-container">
+                        <input type="text" id="comment-content" placeholder="Add your comment here!">
+                        <button type="submit" id="comment-post">Post Comment</button>
+                    </div>
+                    
+                </div>
             </div>
-            <div id="page-edit-thread" style="display: none;">
+            <div id="page-edit-thread">
                 <form id="thread-edit-form" action="#">
-                    <Label>Title</Label>
+                    <label>Title</label><br/>
                     <input type="text" id="edit-title"/><br/>
 
-                    <label>Content</label>
+                    <label>Content</label><br/>
                     <input type="text" id="edit-content"><br/>
 
-                    <label>Public post?</label>
-                    <input type="checkbox" id="edit-public-status"/><br/>
+                    <div class="checkboxes-container">
+                        <label>Public post?</label>
+                        <input type="checkbox" id="edit-public-status"/><br/>
+    
+                        <label>Locked?</label>
+                        <input type="checkbox" id="edit-lock-status"/><br/>
+                    </div>
 
-                    <label>Locked?</label>
-                    <input type="checkbox" id="edit-lock-status"/><br/>
-
-                    <button id="submit-edit">Submit Changes</button>
+                    <button type="submit" id="submit-edit">Submit Changes</button>
                 </form>
             </div>
+            
+        </div>
+        <dialog class="modal" id="page-reply">
+            <form id="comment-reply-form" action="#">
+                <button id="reply-cancel">Cancel</button>
+                <h2>Create Reply</h2>
+                <label>
+                    content
+                </label>
+                <input type="text" id="reply-content" placeholder="Add your reply here!">
+                <button id="reply-post">Post Reply</button>
+                <button id="reply-edit">Submit Comment Changes</button>
+                
+            </form>
         </div>
 
     </main>
