@@ -140,7 +140,6 @@ button:hover,
     align-self: flex-start;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
 }
 
 .prev-next-container {
@@ -243,12 +242,40 @@ button:hover,
 /* Single Thread Styling */
 #page-edit-thread,
 #single-thread-container {
-    width: 75%;
+    width: 70%;
     margin-top: 30px;
     margin-left: 20px;
     margin-right: 20px;
-    flex: 2;
+    align-content: flex-start;
 }
+
+@media (max-width: 900px) {
+    #page-edit-thread,
+    #single-thread-container {
+        width: 60%;
+    }
+}
+@media (max-width: 700px) {
+    #page-edit-thread,
+    #single-thread-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 550px) {
+    #page-edit-thread,
+    #single-thread-container {
+        width: 40%;
+    }
+}
+
+@media (max-width: 450px) {
+    #page-edit-thread,
+    #single-thread-container {
+        width: 25%;
+    }
+}
+
 .thread-title {
     font-weight: lighter;
     word-wrap: break-word;
