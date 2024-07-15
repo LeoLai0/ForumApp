@@ -1,4 +1,4 @@
-# Vanilla JS: Qanda
+# Vanilla JS: Forum Application
 
 ## The Task (Frontend)
 
